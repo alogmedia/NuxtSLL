@@ -30,6 +30,13 @@ export default defineNuxtConfig({
     "@/assets/css/index.css", // Assuming Tailwind is imported here
   ],
 
+  studio: {
+    gitInfo: {
+      name: "NuxtSLL",
+      owner: "alogmedia",
+      url: "https://github.com/alogmedia/NuxtSLL",
+    },
+  },
   // PostCSS Configuration
   postcss: {
     plugins: {
