@@ -18,6 +18,16 @@ export default defineNuxtConfig({
     cssPath: "@/assets/css/index.css",
   },
 
+  components: {
+    dirs: [
+      {
+        path: "~/components/ui/",
+        prefix: "Ui",
+        extensions: ["vue"], // Only auto-import .vue files, ignore index.ts
+      },
+    ],
+  },
+
   // PostCSS Configuration
   postcss: {
     plugins: {
