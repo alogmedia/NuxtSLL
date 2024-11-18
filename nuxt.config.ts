@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   ssr: true,
 
   // Tailwind CSS Module Configuration (Nuxt has built-in Tailwind support)
-  modules: ["@nuxtjs/tailwindcss", "@nuxthq/studio"],
+  modules: ["@nuxtjs/tailwindcss", "@nuxthq/studio", "@nuxt/content"],
 
   build: {
     rollupOptions: {

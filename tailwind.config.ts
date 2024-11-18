@@ -1,5 +1,6 @@
 import { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
+import typography from "@tailwindcss/typography";
 
 const config: Config = {
   darkMode: ["class"],
@@ -99,7 +100,7 @@ const config: Config = {
       "collapsible-up": "collapsible-up 0.2s ease-in-out",
     },
   },
-  plugins: [animate],
+  plugins: [animate, typography],
 };
 
 export default config;
