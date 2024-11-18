@@ -7,7 +7,7 @@ html {
 }
 
 /* *=========== Default theme =========== */
-/* @layer base {
+@layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
@@ -71,7 +71,7 @@ html {
 
     --ring: 240 4.9% 83.9%;
   }
-} */
+}
 
 /* *=========== Orange theme =========== */
 @layer base {

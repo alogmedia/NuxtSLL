@@ -23,27 +23,6 @@ import icon from "/assets/icon.ico";
         </div>
 
         <div class="flex flex-col gap-2">
-          <h3 class="font-bold text-lg">Help</h3>
-          <div>
-            <NuxtLink to="#community" class="opacity-60 hover:opacity-100">
-              Join Us
-            </NuxtLink>
-          </div>
-
-          <div>
-            <NuxtLink to="#faq" class="opacity-60 hover:opacity-100">
-              FAQ
-            </NuxtLink>
-          </div>
-
-          <div>
-            <NuxtLink to="/privacypolicy" class="opacity-60 hover:opacity-100">
-              Privacy Policy
-            </NuxtLink>
-          </div>
-        </div>
-
-        <div class="flex flex-col gap-2">
           <h3 class="font-bold text-lg">Socials</h3>
           <div>
             <NuxtLink
@@ -104,6 +83,15 @@ import icon from "/assets/icon.ico";
           <div>
             <NuxtLink to="/artillery" class="opacity-60 hover:opacity-100">
               Artillery Calculator
+            </NuxtLink>
+          </div>
+        </div>
+        <div class="flex flex-col gap-2">
+          <h3 class="font-bold text-lg">Help</h3>
+
+          <div>
+            <NuxtLink to="/privacypolicy" class="opacity-60 hover:opacity-100">
+              Privacy Policy
             </NuxtLink>
           </div>
         </div>

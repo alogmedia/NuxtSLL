@@ -9,9 +9,15 @@ const config: Config = {
   content: [
     "./pages/**/*.{ts,tsx,vue}",
     "./components/**/*.{ts,tsx,vue}",
-    "./layouts/**/*.{ts,tsx,vue}", // Layouts directory specific to Nuxt
-    "./app.vue", // App.vue file
-    "./plugins/**/*.{ts,js}", // Plugins
+    "./layouts/**/*.{ts,tsx,vue}",
+    "./app.vue",
+    "./plugins/**/*.{ts,js}",
+    "./composables/**/*.{ts,js}", // If using composables
+    "./middleware/**/*.{ts,js}", // If using middleware
+    "@/pages/**/*.{vue,js,ts}", // Adding Nuxt alias for pages
+    "@/components/**/*.{vue,js,ts}", // Adding Nuxt alias for components
+    "@/layouts/**/*.{vue,js,ts}", // Adding Nuxt alias for layouts
+    "@/app.vue",
   ],
 
   theme: {

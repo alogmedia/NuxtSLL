@@ -1,4 +1,17 @@
 <script setup>
+import { ref, computed, watch, defineProps } from "vue";
+import Navbar from "@/components/Navbar.vue";
+import Footer from "@/components/Footer.vue";
+import Card from "@/components/ui/card/Card.vue";
+import Select from "@/components/ui/select/Select.vue";
+import SelectTrigger from "@/components/ui/select/SelectTrigger.vue";
+import SelectContent from "@/components/ui/select/SelectContent.vue";
+import SelectGroup from "@/components/ui/select/SelectGroup.vue";
+import SelectItem from "@/components/ui/select/SelectItem.vue";
+import SelectValue from "@/components/ui/select/SelectValue.vue";
+import Label from "@/components/ui/label/Label.vue";
+import Input from "@/components/ui/input/Input.vue";
+import rules from "@/data/rules.json";
 // Reactive state
 const distance = ref("");
 const selectedTeam = ref("GER/US"); // Default team

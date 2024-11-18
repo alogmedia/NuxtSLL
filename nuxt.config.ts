@@ -1,5 +1,4 @@
 import { defineNuxtConfig } from "nuxt/config";
-import path from "path";
 
 // Nuxt 3 Configuration
 export default defineNuxtConfig({
@@ -7,7 +6,7 @@ export default defineNuxtConfig({
   ssr: true,
 
   // Tailwind CSS Module Configuration (Nuxt has built-in Tailwind support)
-  modules: ["@nuxtjs/tailwindcss"],
+  modules: ["@nuxtjs/tailwindcss", "@nuxthq/studio", "@nuxt/content"],
 
   build: {
     rollupOptions: {
@@ -21,12 +20,15 @@ export default defineNuxtConfig({
   components: {
     dirs: [
       {
-        path: "~/components/ui/",
-        prefix: "Ui",
-        extensions: ["vue"], // Only auto-import .vue files, ignore index.ts
+        path: "~/components", // Main components directory for general components
+        extensions: ["vue"],
       },
     ],
   },
+
+  css: [
+    "@/assets/css/index.css", // Assuming Tailwind is imported here
+  ],
 
   // PostCSS Configuration
   postcss: {
