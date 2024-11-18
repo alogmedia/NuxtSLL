@@ -7,12 +7,7 @@
     </video>
   </div>
   <Navbar />
-  <Hero />
-  <!--<Features />-->
-  <HowItWorks />
-  <Team />
-  <Community />
-  <FAQ />
+  <HLLTipsArticle />
   <Footer />
 </template>
 
@@ -25,7 +20,6 @@
   bottom: 0;
   min-width: 100%;
   min-height: 100%;
-  object-fit: cover;
   opacity: 0.3;
   z-index: -1;
 }
@@ -40,23 +34,22 @@
 <script setup lang="ts">
 import rules from "@/data/rules.json";
 import { useHead } from "#app";
-
+import HLLTipsArticle from "@/components/articles/HLLTipsArticle.vue";
 useHead({
-  title: "Scandinavians Let Loose - Hell Let Loose Clan",
+  title: "Scandinavians Let Loose - Articles",
   meta: [
     {
       name: "description",
       content:
-        "Scandinavians Let Loose is a WW2 gaming community dedicated to fun, team play, and daily matches. Join our clan today!",
+        "Articles, guides and content regarding Hell Let Loose, made by Scandinavians Let Loose players!",
     },
     {
       property: "og:title",
-      content: "Scandinavians Let Loose",
+      content: "Scandinavians Let Loose - WW2 Clan",
     },
     {
       property: "og:description",
-      content:
-        "Scandinavians Let Loose is a WW2 gaming community dedicated to fun and team play.",
+      content: "Hell Let Loose articles, guides and content.",
     },
     {
       property: "og:image",
@@ -64,7 +57,7 @@ useHead({
     },
     {
       property: "og:url",
-      content: "https://scanhll.com",
+      content: "https://scanhll.com/articles",
     },
     {
       name: "twitter:card",
@@ -74,7 +67,7 @@ useHead({
   link: [
     {
       rel: "canonical",
-      href: "https://scanhll.com", // Use your actual domain
+      href: "https://scanhll.com/articles", // Use your actual domain
     },
   ],
 });
