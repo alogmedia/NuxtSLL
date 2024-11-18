@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   ssr: true,
 
   // Tailwind CSS Module Configuration (Nuxt has built-in Tailwind support)
-  modules: ["@nuxtjs/tailwindcss", "@nuxthq/studio", "@nuxt/content"],
+  modules: ["@nuxtjs/tailwindcss"],
 
   build: {
     rollupOptions: {
@@ -30,13 +30,6 @@ export default defineNuxtConfig({
     "@/assets/css/index.css", // Assuming Tailwind is imported here
   ],
 
-  studio: {
-    gitInfo: {
-      name: "NuxtSLL",
-      owner: "alogmedia",
-      url: "https://github.com/alogmedia/NuxtSLL",
-    },
-  },
   // PostCSS Configuration
   postcss: {
     plugins: {

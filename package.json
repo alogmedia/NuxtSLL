@@ -10,10 +10,8 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxt/content": "3.0.0-alpha.6",
     "@nuxtjs/tailwindcss": "^6.12.2",
     "@tailwindcss/typography": "^0.5.15",
-    "@vite-pwa/nuxt": "^0.10.6",
     "@vueuse/core": "^11.2.0",
     "add": "^2.0.6",
     "class-variance-authority": "^0.7.0",
@@ -31,7 +29,6 @@
     "vue-router": "latest"
   },
   "devDependencies": {
-    "@nuxthq/studio": "^2.2.1",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.15"
