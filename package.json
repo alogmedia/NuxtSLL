@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@nuxt/content": "3.0.0-alpha.6",
-    "@nuxthq/studio": "^2.2.1",
     "@nuxtjs/tailwindcss": "^6.12.2",
     "@vite-pwa/nuxt": "^0.10.6",
     "@vueuse/core": "^11.2.0",
@@ -21,7 +20,6 @@
     "lucide-vue-next": "^0.460.0",
     "module": "^1.2.5",
     "npm": "^10.9.0",
-    "npx": "^10.2.2",
     "nuxi": "^3.15.0",
     "nuxt": "^3.14.159",
     "radix-vue": "^1.9.9",
@@ -32,6 +30,7 @@
     "vue-router": "latest"
   },
   "devDependencies": {
+    "@nuxthq/studio": "^2.2.1",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.15"
