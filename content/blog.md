@@ -1,3 +1,3 @@
-# My First Page
+## Blog test page
 
-Here is some content.
+# This is a test.
