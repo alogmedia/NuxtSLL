@@ -15,14 +15,9 @@ export default defineNuxtConfig({
         username: "notfound404",
         password: "Elpatr0n!",
       },
-      allowedRoutes: [
-        "/",
-        "/artillery",
-        "/privacypolicy",
-        "/blog/.*",
-        "/api/.*",
-      ]
     ],
+    allowedRoutes: ["/", "/artillery", "/privacypolicy", "/blog/.*", "/api/.*"],
+  },
 
   build: {
     loaders: {
