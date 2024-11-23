@@ -57,6 +57,7 @@ import { ref, computed, onMounted } from "vue";
 // pages/vote.vue
 definePageMeta({
   middleware: "auth-password",
+  ssr: false,
 });
 
 // State for map votes, historical data, and total votes

@@ -25,10 +25,10 @@ export default defineEventHandler(async (event) => {
   if (isMatch) {
     setCookie(event, "votePageAuth", "authenticated", {
       httpOnly: true,
-      secure: false,
+      secure: true,
       path: "/",
-      maxAge: 60 * 60,
-      sameSite: "Lax",
+      maxAge: 7 * 60 * 60,
+      sameSite: "None",
     });
     return { success: true };
   }
