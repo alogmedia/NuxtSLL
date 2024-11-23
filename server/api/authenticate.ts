@@ -1,4 +1,4 @@
-import bcrypt from "bcryptjs"; // Use bcryptjs for Cloudflare compatibility
+import bcrypt from "bcryptjs";
 
 export default defineEventHandler(async (event) => {
   event.res.setHeader(
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
       httpOnly: true,
       secure: true,
       path: "/",
-      maxAge: 7 * 60 * 60,
+      maxAge: 60 * 60,
       sameSite: "Lax",
     });
     return { success: true };

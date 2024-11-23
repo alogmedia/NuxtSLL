@@ -39,6 +39,7 @@ const submitPassword = async () => {
     const { success, message } = await $fetch("/api/authenticate", {
       method: "POST",
       body: { password: password.value },
+      credentials: "include", // Include cookies with the request
     });
 
     if (success) {
