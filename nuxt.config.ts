@@ -18,7 +18,7 @@ export default defineNuxtConfig({
       allowedRoutes: [
         "/",
         "/artillery",
-        "/privacypolicy",´
+        "/privacypolicy",
         "/blog/.*",
         "/api/.*",
       ]
