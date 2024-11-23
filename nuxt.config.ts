@@ -7,16 +7,19 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     VOTE_PAGE_HASH: process.env.VOTE_PAGE_HASH || "", // Ensure it has a fallback
-  },
+  }, // Missing comma added here
 
   // Tailwind CSS Module Configuration (Nuxt has built-in Tailwind support)
   modules: ["@nuxtjs/tailwindcss"],
 
   build: {
-    rollupOptions: {
-      external: ["@vueuse/core"],
+    loaders: {
+      scss: {
+        implementation: require("sass"),
+      },
     },
   },
+
   tailwindcss: {
     cssPath: "@/assets/css/index.css",
   },
@@ -29,10 +32,6 @@ export default defineNuxtConfig({
       },
     ],
   },
-
-  css: [
-    "@/assets/css/index.css", // Assuming Tailwind is imported here
-  ],
 
   // PostCSS Configuration
   postcss: {
