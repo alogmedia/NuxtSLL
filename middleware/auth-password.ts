@@ -1,11 +1,18 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-  const authCookieValue = process.server
-    ? useRequestHeaders(["cookie"]).cookie?.match(/votePageAuth=([^;]*)/)?.[1]
-    : useCookie("votePageAuth").value;
+  const cookiesHeader = useRequestHeaders(["cookie"]).cookie || "";
 
-  console.log("Auth Cookie Value:", authCookieValue);
+  // Parse cookies manually
+  const cookies = Object.fromEntries(
+    cookiesHeader.split("; ").map((cookie) => cookie.split("=")),
+  );
 
-  if (authCookieValue !== "authenticated") {
+  console.log("Cookies from request headers:", cookies);
+
+  const authCookie = cookies.votePageAuth; // Get the specific cookie
+
+  console.log("Auth Cookie Value:", authCookie);
+
+  if (authCookie !== "authenticated") {
     console.log(
       "Redirecting to /enter-password due to missing or invalid cookie.",
     );
