@@ -54,11 +54,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 
-// pages/vote.vue
-definePageMeta({
-  middleware: "auth-password",
-});
-
 // State for map votes, historical data, and total votes
 interface MapVote {
   prettyName: string;

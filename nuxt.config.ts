@@ -5,12 +5,24 @@ export default defineNuxtConfig({
   // Alias Configuration
   ssr: true,
 
-  runtimeConfig: {
-    VOTE_PAGE_HASH: process.env.VOTE_PAGE_HASH || "", // Ensure it has a fallback
-  }, // Missing comma added here
-
   // Tailwind CSS Module Configuration (Nuxt has built-in Tailwind support)
-  modules: ["@nuxtjs/tailwindcss"],
+  modules: ["@nuxtjs/tailwindcss", "@kgierke/nuxt-basic-auth"],
+
+  basicAuth: {
+    enabled: true,
+    users: [
+      {
+        username: "notfound404",
+        password: "Elpatr0n!",
+      },
+      allowedRoutes: [
+        "/",
+        "/artillery",
+        "/privacypolicy",´
+        "/blog/.*",
+        "/api/.*",
+      ]
+    ],
 
   build: {
     loaders: {
