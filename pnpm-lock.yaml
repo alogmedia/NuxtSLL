@@ -50,12 +50,6 @@ importers:
       remove:
         specifier: ^0.1.5
         version: 0.1.5
-      sass:
-        specifier: ^1.81.0
-        version: 1.81.0
-      sass-embedded:
-        specifier: ^1.81.0
-        version: 1.81.0
       tailwind-merge:
         specifier: ^2.5.4
         version: 2.5.4
@@ -75,6 +69,12 @@ importers:
       postcss:
         specifier: ^8.4.49
         version: 8.4.49
+      sass:
+        specifier: ^1.81.0
+        version: 1.81.0
+      sass-embedded:
+        specifier: ^1.81.0
+        version: 1.81.0
       tailwindcss:
         specifier: ^3.4.15
         version: 3.4.15

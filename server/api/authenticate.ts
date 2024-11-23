@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
   if (isMatch) {
     setCookie(event, "votePageAuth", "authenticated", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       path: "/",
       maxAge: 7 * 60 * 60,
       sameSite: "Lax",

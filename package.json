@@ -27,9 +27,7 @@
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "vue": "latest",
-    "vue-router": "latest",
-    "sass": "^1.81.0",
-    "sass-embedded": "^1.81.0"
+    "vue-router": "latest"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
