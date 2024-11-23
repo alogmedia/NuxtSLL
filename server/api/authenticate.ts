@@ -1,8 +1,8 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs"; // Use bcryptjs instead of bcrypt
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
-  const storedHash = config.VOTE_PAGE_HASH; // Retrieve the private variable
+  const storedHash = config.VOTE_PAGE_HASH;
 
   if (!storedHash) {
     console.error(
@@ -13,17 +13,16 @@ export default defineEventHandler(async (event) => {
     );
   }
 
-  const body = await readBody(event); // Get the request body
-  const isMatch = await bcrypt.compare(body.password, storedHash);
+  const body = await readBody(event);
+  const isMatch = bcrypt.compareSync(body.password, storedHash); // Use compareSync for bcryptjs
 
   if (isMatch) {
     setCookie(event, "votePageAuth", "authenticated", {
-      httpOnly: false, // Allow access in client-side JavaScript for debugging
-      secure: false, // Ensure this is false for local development
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60, // 1 hour
       path: "/",
     });
-
     return { success: true };
   }
 
