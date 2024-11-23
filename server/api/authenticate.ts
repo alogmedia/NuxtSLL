@@ -1,6 +1,12 @@
-import bcrypt from "bcryptjs"; // Use bcryptjs instead of bcrypt
+import bcrypt from "bcryptjs"; // Use bcryptjs for Cloudflare compatibility
 
 export default defineEventHandler(async (event) => {
+  event.res.setHeader(
+    "Access-Control-Allow-Origin",
+    event.req.headers.origin || "*",
+  );
+  event.res.setHeader("Access-Control-Allow-Credentials", "true");
+
   const config = useRuntimeConfig();
   const storedHash = config.VOTE_PAGE_HASH;
 
@@ -14,14 +20,15 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event);
-  const isMatch = bcrypt.compareSync(body.password, storedHash); // Use compareSync for bcryptjs
+  const isMatch = bcrypt.compareSync(body.password, storedHash);
 
   if (isMatch) {
     setCookie(event, "votePageAuth", "authenticated", {
       httpOnly: true,
-      secure: true,
-      maxAge: 7 * 60 * 60, // 1 hour
+      secure: process.env.NODE_ENV === "production",
       path: "/",
+      maxAge: 7 * 60 * 60,
+      sameSite: "Lax",
     });
     return { success: true };
   }
