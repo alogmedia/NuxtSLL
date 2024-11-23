@@ -3,7 +3,8 @@ import { defineNuxtConfig } from "nuxt/config";
 // Nuxt 3 Configuration
 export default defineNuxtConfig({
   // Alias Configuration
-  ssr: true,
+  ssr: false, // Disable server-side rendering for static hosting
+  target: "static", // Ensure static files are generated for Cloudflare Pages
 
   // Tailwind CSS Module Configuration (Nuxt has built-in Tailwind support)
   modules: ["@nuxtjs/tailwindcss", "@kgierke/nuxt-basic-auth"],

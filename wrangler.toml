@@ -1,0 +1,6 @@
+name = "sllvoting" # Replace with your project name
+compatibility_date = "2024-11-23" # Today's date
+
+[[kv_namespaces]]
+binding = "KV_NAMESPACE" # This is how you refer to the KV storage in your code
+id = "bd44c6d7454c4255b11d1bffe0f22d5d" # Found in the Cloudflare dashboard
