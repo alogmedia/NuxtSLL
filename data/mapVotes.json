@@ -1,0 +1,78 @@
+{
+  "history": [
+    {
+      "mapId": "carentan_offensive_ger",
+      "timeofvote": "2024-11-23T13:57:45.771Z",
+      "mapVotes": [
+        {
+          "prettyName": "Kharkov Off. RUS",
+          "gameMode": "offensive",
+          "votes": 0,
+          "voters": []
+        },
+        {
+          "prettyName": "Utah Beach Off. US",
+          "gameMode": "offensive",
+          "votes": 0,
+          "voters": []
+        },
+        {
+          "prettyName": "Omaha Beach Off. US",
+          "gameMode": "offensive",
+          "votes": 0,
+          "voters": []
+        },
+        {
+          "prettyName": "St. Mere Eglise Off. US",
+          "gameMode": "offensive",
+          "votes": 0,
+          "voters": []
+        },
+        {
+          "prettyName": "Hurtgen Forest Off. US",
+          "gameMode": "offensive",
+          "votes": 0,
+          "voters": []
+        },
+        {
+          "prettyName": "St. Mere Eglise Off. GER",
+          "gameMode": "offensive",
+          "votes": 0,
+          "voters": []
+        },
+        {
+          "prettyName": "Hill 400 Off. US",
+          "gameMode": "offensive",
+          "votes": 0,
+          "voters": []
+        }
+      ]
+    }
+  ],
+  "totalVotes": [
+    {
+      "map": "Carentan Off. GER",
+      "totalVotes": 5
+    },
+    {
+      "map": "Foy Off. GER",
+      "totalVotes": 5
+    },
+    {
+      "map": "Utah Beach Off. US",
+      "totalVotes": 4
+    },
+    {
+      "map": "Kharkov Off. RUS",
+      "totalVotes": 2
+    },
+    {
+      "map": "Hurtgen Forest Off. US",
+      "totalVotes": 1
+    },
+    {
+      "map": "Purple Heart Lane Off. GER",
+      "totalVotes": 1
+    }
+  ]
+}

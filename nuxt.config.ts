@@ -5,6 +5,10 @@ export default defineNuxtConfig({
   // Alias Configuration
   ssr: true,
 
+  runtimeConfig: {
+    VOTE_PAGE_HASH: process.env.VOTE_PAGE_HASH || "", // Ensure it has a fallback
+  },
+
   // Tailwind CSS Module Configuration (Nuxt has built-in Tailwind support)
   modules: ["@nuxtjs/tailwindcss"],
 
