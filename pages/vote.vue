@@ -10,44 +10,6 @@
         </li>
       </ul>
     </div>
-
-    <!-- <div class="date-votes">
-      <div class="daily-votes">
-        <h3>Daily Votes</h3>
-        <ul>
-          <li v-for="(daily, index) in sortedDailyVotes" :key="index">
-            {{ daily.map }}:
-            <span :class="getVoteColor(index, sortedDailyVotes.length)">
-              {{ daily.totalVotes }} vote(s)
-            </span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="weekly-votes">
-        <h3>Weekly Votes</h3>
-        <ul>
-          <li v-for="(weekly, index) in sortedWeeklyVotes" :key="index">
-            {{ weekly.map }}:
-            <span :class="getVoteColor(index, sortedWeeklyVotes.length)">
-              {{ weekly.totalVotes }} vote(s)
-            </span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="monthly-votes">
-        <h3>Monthly Votes</h3>
-        <ul>
-          <li v-for="(monthly, index) in sortedMonthlyVotes" :key="index">
-            {{ monthly.map }}:
-            <span :class="getVoteColor(index, sortedMonthlyVotes.length)">
-              {{ monthly.totalVotes }} vote(s)
-            </span>
-          </li>
-        </ul>
-      </div>
-    </div> -->
   </div>
 </template>
 
@@ -111,7 +73,6 @@ const getVoteColor = (index: number, length: number) => {
   return "red";
 };
 
-// Load votes from file (local data)
 const loadVotesFromFile = async () => {
   try {
     const response = await fetch("/api/loadVotes", {
@@ -127,43 +88,66 @@ const loadVotesFromFile = async () => {
     const data = await response.json();
     console.log("Loaded data from file:", data);
 
-    if (data.history && Array.isArray(data.history)) {
+    // Ensure data.history is an array and has valid entries
+    if (
+      data.history &&
+      Array.isArray(data.history) &&
+      data.history.length > 0
+    ) {
       const latestHistory = data.history[data.history.length - 1];
-      mapVotes.value = latestHistory.mapVotes.map((map: any) => ({
-        ...map,
-        voters: new Set(map.voters || []),
-      }));
-      lastUpdateTime.value = latestHistory.timeofvote || "";
-      currentMapId.value = latestHistory.mapId || "";
+
+      // Validate that mapVotes exists and is an array
+      if (latestHistory && Array.isArray(latestHistory.mapVotes)) {
+        mapVotes.value = latestHistory.mapVotes.map((map: any) => ({
+          ...map,
+          voters: new Set(map.voters || []), // Ensure voters is always a Set
+        }));
+        lastUpdateTime.value = latestHistory.timeofvote || "";
+        currentMapId.value = latestHistory.mapId || "";
+      } else {
+        console.warn("Unexpected format in latestHistory or missing mapVotes");
+        mapVotes.value = [];
+      }
     } else {
-      console.warn("Unexpected format in local file data");
+      console.warn(
+        "Unexpected format in local file data - history is missing or empty",
+      );
+      mapVotes.value = [];
     }
 
+    // Ensure data.totalVotes is an array
     if (data.totalVotes && Array.isArray(data.totalVotes)) {
       totalVotes.value = data.totalVotes;
+    } else {
+      console.warn(
+        "Unexpected format in local file data - totalVotes is missing or not an array",
+      );
+      totalVotes.value = [];
     }
 
-    // Calculate daily, weekly, and monthly votes
-    const now = new Date();
-    const dayInMs = 24 * 60 * 60 * 1000;
-    const weekInMs = 7 * dayInMs;
-    const monthInMs = 30 * dayInMs;
+    // Calculate daily, weekly, and monthly votes if the history is valid
+    if (data.history && Array.isArray(data.history)) {
+      const now = new Date();
+      const dayInMs = 24 * 60 * 60 * 1000;
+      const weekInMs = 7 * dayInMs;
+      const monthInMs = 30 * dayInMs;
 
-    dailyVotes.value = calculateVotesWithinTimeframe(
-      data.history,
-      now,
-      dayInMs,
-    );
-    weeklyVotes.value = calculateVotesWithinTimeframe(
-      data.history,
-      now,
-      weekInMs,
-    );
-    monthlyVotes.value = calculateVotesWithinTimeframe(
-      data.history,
-      now,
-      monthInMs,
-    );
+      dailyVotes.value = calculateVotesWithinTimeframe(
+        data.history,
+        now,
+        dayInMs,
+      );
+      weeklyVotes.value = calculateVotesWithinTimeframe(
+        data.history,
+        now,
+        weekInMs,
+      );
+      monthlyVotes.value = calculateVotesWithinTimeframe(
+        data.history,
+        now,
+        monthInMs,
+      );
+    }
   } catch (error) {
     console.error("Error loading data from file:", error);
   }
@@ -178,20 +162,26 @@ const calculateVotesWithinTimeframe = (
   const uniqueVotesTracker: Record<string, number> = {};
 
   history.forEach((entry) => {
-    const entryTime = new Date(entry.timeofvote).getTime();
-    if (now.getTime() - entryTime <= timeframeMs) {
-      entry.mapVotes.forEach((mapVote) => {
-        const voteKey = `${entry.mapId}_${mapVote.prettyName}`;
-        if (!uniqueVotesTracker[voteKey]) {
-          uniqueVotesTracker[voteKey] = entryTime;
-          if (!votesMap[mapVote.prettyName]) {
-            votesMap[mapVote.prettyName] = new Set();
+    if (entry && entry.timeofvote && Array.isArray(entry.mapVotes)) {
+      const entryTime = new Date(entry.timeofvote).getTime();
+      if (now.getTime() - entryTime <= timeframeMs) {
+        entry.mapVotes.forEach((mapVote) => {
+          if (mapVote && mapVote.prettyName) {
+            const voteKey = `${entry.mapId}_${mapVote.prettyName}`;
+            if (!uniqueVotesTracker[voteKey]) {
+              uniqueVotesTracker[voteKey] = entryTime;
+              if (!votesMap[mapVote.prettyName]) {
+                votesMap[mapVote.prettyName] = new Set();
+              }
+              if (mapVote.voters) {
+                mapVote.voters.forEach((voter) =>
+                  votesMap[mapVote.prettyName].add(voter),
+                );
+              }
+            }
           }
-          mapVote.voters.forEach((voter) =>
-            votesMap[mapVote.prettyName].add(voter),
-          );
-        }
-      });
+        });
+      }
     }
   });
 

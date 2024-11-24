@@ -15,5 +15,5 @@ if (!admin.apps.length) {
   });
 }
 
-export const db = admin.database();
-export default admin;
+const db = admin.database();
+export { admin, db };
