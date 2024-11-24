@@ -2,32 +2,60 @@
   <div class="vote-tracker">
     <h2>Map Voting Statistics</h2>
     <div class="all-votes">
+      <div class="first-votes">
+        <ul v-if="totalVotes.length">
+          <li v-for="(total, index) in totalVotes" :key="index">
+            {{ total.map }}:
+            <span class="votes">{{ total.totalVotes }} vote(s)</span>
+          </li>
+        </ul>
+        <div v-else>
+          <div class="space-y-2">
+            <!-- Skeleton Items -->
+            <div
+              v-for="index in 10"
+              :key="index"
+              class="flex justify-between items-center p-2 bg-gray-800 rounded"
+            >
+              <!-- Skeleton for map name -->
+              <div class="h-4 w-3/4 bg-gray-600 rounded"></div>
+              <!-- Skeleton for vote count -->
+              <div class="h-4 w-1/5 bg-gray-600 rounded"></div>
+            </div>
+          </div>
+        </div>
+        <div class="total-votes" v-if="totalVotes.length">
+          <Bar
+            :chartData="totalChartData"
+            :index="'name'"
+            :categories="['total']"
+            :yFormatter="(tick) => `${tick} votes`"
+          />
+        </div>
+        <div v-else>
+          <div class="flex flex-col space-y-4">
+            <!-- Skeleton Chart -->
+            <div class="flex items-end space-x-4 h-[350px]">
+              <!-- Skeleton Bars -->
+              <div class="h-[80%] w-[40px] bg-gray-600 rounded-t"></div>
+              <div class="h-[60%] w-[40px] bg-gray-600 rounded-t"></div>
+              <div class="h-[40%] w-[40px] bg-gray-600 rounded-t"></div>
+              <div class="h-[70%] w-[40px] bg-gray-600 rounded-t"></div>
+              <div class="h-[50%] w-[40px] bg-gray-600 rounded-t"></div>
+              <div class="h-[80%] w-[40px] bg-gray-600 rounded-t"></div>
+              <div class="h-[60%] w-[40px] bg-gray-600 rounded-t"></div>
+              <div class="h-[40%] w-[40px] bg-gray-600 rounded-t"></div>
+              <div class="h-[70%] w-[40px] bg-gray-600 rounded-t"></div>
+              <div class="h-[50%] w-[40px] bg-gray-600 rounded-t"></div>
+              <div class="h-[40%] w-[40px] bg-gray-600 rounded-t"></div>
+              <div class="h-[70%] w-[40px] bg-gray-600 rounded-t"></div>
+              <div class="h-[50%] w-[40px] bg-gray-600 rounded-t"></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <Accordion type="single" collapsible>
         <AccordionItem value="item-1">
-          <AccordionTrigger>See total Votes</AccordionTrigger>
-          <AccordionContent>
-            <div class="first-votes">
-              <ul>
-                <li v-for="(total, index) in totalVotes" :key="index">
-                  {{ total.map }}:
-                  <span class="votes">{{ total.totalVotes }} vote(s)</span>
-                </li>
-              </ul>
-              <div class="total-votes" v-if="totalVotes.length">
-                <Bar
-                  :chartData="totalChartData"
-                  :index="'name'"
-                  :categories="['total']"
-                  :yFormatter="(tick) => `${tick} votes`"
-                />
-              </div>
-              <div v-else>
-                <p>Loading chart data...</p>
-              </div>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="item-2">
           <AccordionTrigger>See Charts Daily/Weekly/Monthly</AccordionTrigger>
           <AccordionContent>
             <div class="daily-votes">
@@ -74,6 +102,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // pages/vote.vue
 definePageMeta({
