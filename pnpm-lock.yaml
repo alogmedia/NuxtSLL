@@ -35,6 +35,9 @@ importers:
       install:
         specifier: ^0.13.0
         version: 0.13.0
+      jwt-decode:
+        specifier: ^4.0.0
+        version: 4.0.0
       lucide-vue-next:
         specifier: ^0.460.0
         version: 0.460.0(vue@3.5.13(typescript@5.6.3))
@@ -50,6 +53,9 @@ importers:
       nuxt:
         specifier: ^3.14.1592
         version: 3.14.1592(@parcel/watcher@2.5.0)(@types/node@22.9.3)(better-sqlite3@11.5.0)(ioredis@5.4.1)(magicast@0.3.5)(rollup@4.27.4)(sass-embedded@1.81.0)(sass@1.81.0)(terser@5.36.0)(typescript@5.6.3)(vite@5.4.11(@types/node@22.9.3)(sass-embedded@1.81.0)(sass@1.81.0)(terser@5.36.0))
+      nuxt-plotly:
+        specifier: ^1.0.14
+        version: 1.0.14(magicast@0.3.5)(rollup@4.27.4)
       radix-vue:
         specifier: ^1.9.10
         version: 1.9.10(vue@3.5.13(typescript@5.6.3))
@@ -62,6 +68,9 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.15)
+      uuid:
+        specifier: ^11.0.3
+        version: 11.0.3
       vue:
         specifier: latest
         version: 3.5.13(typescript@5.6.3)
@@ -3050,6 +3059,10 @@ packages:
   jws@4.0.0:
     resolution: {integrity: sha512-KDncfTmOZoOMTFG4mBlG0qUIOlc03fmzH+ru6RgYVZhPkyiy/92Owlt/8UEN+a4TXR1FQetfIpJE8ApdvdVxTg==}
 
+  jwt-decode@4.0.0:
+    resolution: {integrity: sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==}
+    engines: {node: '>=18'}
+
   keygrip@1.1.0:
     resolution: {integrity: sha512-iYSchDJ+liQ8iwbSI2QqsQOvqv58eJCEanyJPJi+Khyu8smkcKSFUCbPwzFcL7YVtZ6eONjqRX/38caJ7QjRAQ==}
     engines: {node: '>= 0.6'}
@@ -3563,6 +3576,9 @@ packages:
     engines: {node: ^16.10.0 || >=18.0.0}
     hasBin: true
 
+  nuxt-plotly@1.0.14:
+    resolution: {integrity: sha512-1ZLOHofAr2tTZo9t0zQ8U/kIGyHQWVXFcpTlUnp2oqawhCo5rqXqivJxDhJxwzwLtQR471EQ6DwPr/zNVYKJqw==}
+
   nuxt@3.14.1592:
     resolution: {integrity: sha512-roWAQH4Mb6WY72cNos+YVw0DgTCNAhNygiAMCedM7hbX6ESTR2n3VH7tU0yIWDPe/hfFdii4M4wWTTNHOtS44g==}
     engines: {node: ^14.18.0 || >=16.10.0}
@@ -3770,6 +3786,9 @@ packages:
 
   pkg-types@1.2.1:
     resolution: {integrity: sha512-sQoqa8alT3nHjGuTjuKgOnvjo4cljkufdtLMnO2LBP/wRwuDlo1tkaEdMxCRhyGRPacv/ztlZgDPm2b7FAmEvw==}
+
+  plotly.js-dist-min@2.35.2:
+    resolution: {integrity: sha512-oWDTf2kYOmTtEw3epeeSBdfH/H3OSktF0suST9oI6fIgKfbyd4MT7TPh8+CVzdHYllYon24Q0HI1hZjOnLqk6g==}
 
   pluralize@8.0.0:
     resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
@@ -8726,6 +8745,8 @@ snapshots:
       jwa: 2.0.0
       safe-buffer: 5.2.1
 
+  jwt-decode@4.0.0: {}
+
   keygrip@1.1.0:
     dependencies:
       tsscmp: 1.0.6
@@ -9246,6 +9267,16 @@ snapshots:
 
   nuxi@3.15.0: {}
 
+  nuxt-plotly@1.0.14(magicast@0.3.5)(rollup@4.27.4):
+    dependencies:
+      '@nuxt/kit': 3.14.1592(magicast@0.3.5)(rollup@4.27.4)
+      plotly.js-dist-min: 2.35.2
+      uuid: 9.0.1
+    transitivePeerDependencies:
+      - magicast
+      - rollup
+      - supports-color
+
   nuxt@3.14.1592(@parcel/watcher@2.5.0)(@types/node@22.9.3)(better-sqlite3@11.5.0)(ioredis@5.4.1)(magicast@0.3.5)(rollup@4.27.4)(sass-embedded@1.81.0)(sass@1.81.0)(terser@5.36.0)(typescript@5.6.3)(vite@5.4.11(@types/node@22.9.3)(sass-embedded@1.81.0)(sass@1.81.0)(terser@5.36.0)):
     dependencies:
       '@nuxt/devalue': 2.0.2
@@ -9555,6 +9586,8 @@ snapshots:
       confbox: 0.1.8
       mlly: 1.7.3
       pathe: 1.1.2
+
+  plotly.js-dist-min@2.35.2: {}
 
   pluralize@8.0.0: {}
 

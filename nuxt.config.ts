@@ -10,7 +10,7 @@ export default defineNuxtConfig({
   },
 
   // Tailwind CSS Module Configuration (Nuxt has built-in Tailwind support)
-  modules: ["@nuxtjs/tailwindcss"],
+  modules: ["@nuxtjs/tailwindcss", "nuxt-plotly"],
 
   nitro: {
     preset: "cloudflare-pages",
@@ -21,6 +21,7 @@ export default defineNuxtConfig({
       external: ["@vueuse/core"],
     },
   },
+
   tailwindcss: {
     cssPath: "@/assets/css/index.css",
   },
@@ -45,4 +46,6 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+
+  compatibilityDate: "2024-11-24",
 });
