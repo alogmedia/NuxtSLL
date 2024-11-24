@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { BarChart } from "@/components/ui/chart-bar";
+import type { PropType } from "vue";
 
 const props = defineProps({
   chartData: {
@@ -15,11 +16,16 @@ const props = defineProps({
     required: true,
   },
   yFormatter: {
-    type: Function as PropType<(tick: number | string, i: number) => string>,
-    default: (tick: number | string) => {
-      return typeof tick === "number"
-        ? `$${new Intl.NumberFormat("us").format(tick)}`
-        : "";
+    type: Function as PropType<
+      (tick: number | Date, i: number, ticks: (number | Date)[]) => string
+    >,
+    default: (tick: number | Date, i: number, ticks: (number | Date)[]) => {
+      if (typeof tick === "number") {
+        return `$${new Intl.NumberFormat("us").format(tick)}`;
+      } else if (tick instanceof Date) {
+        return tick.toLocaleDateString("en-US");
+      }
+      return "";
     },
   },
 });

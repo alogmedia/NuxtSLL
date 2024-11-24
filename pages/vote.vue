@@ -29,7 +29,18 @@
             :chartData="totalChartData"
             :index="'name'"
             :categories="['total']"
-            :yFormatter="(tick) => `${tick} votes`"
+            :yFormatter="(tick: number | Date | string | null) => {
+              if (typeof tick === 'number') {
+                return `${tick} votes`;
+              }
+              if (tick instanceof Date) {
+                return tick.toLocaleDateString();
+              }
+              if (typeof tick === 'string') {
+                return tick;
+              }
+              return '';
+            }"
           />
         </div>
         <div v-else>
@@ -64,7 +75,18 @@
                 :chartData="dailyChartData"
                 :index="'name'"
                 :categories="['total']"
-                :yFormatter="(tick) => `${tick} votes`"
+                :yFormatter="(tick: number | Date | string | null) => {
+              if (typeof tick === 'number') {
+                return `${tick} votes`;
+              }
+              if (tick instanceof Date) {
+                return tick.toLocaleDateString();
+              }
+              if (typeof tick === 'string') {
+                return tick;
+              }
+              return '';
+            }"
               />
             </div>
 
@@ -74,7 +96,18 @@
                 :chartData="weeklyChartData"
                 :index="'name'"
                 :categories="['total']"
-                :yFormatter="(tick) => `${tick} votes`"
+                :yFormatter="(tick: number | Date | string | null) => {
+              if (typeof tick === 'number') {
+                return `${tick} votes`;
+              }
+              if (tick instanceof Date) {
+                return tick.toLocaleDateString();
+              }
+              if (typeof tick === 'string') {
+                return tick;
+              }
+              return '';
+            }"
               />
             </div>
 
@@ -84,7 +117,18 @@
                 :chartData="monthlyChartData"
                 :index="'name'"
                 :categories="['total']"
-                :yFormatter="(tick) => `${tick} votes`"
+                :yFormatter="(tick: number | Date | string | null) => {
+              if (typeof tick === 'number') {
+                return `${tick} votes`;
+              }
+              if (tick instanceof Date) {
+                return tick.toLocaleDateString();
+              }
+              if (typeof tick === 'string') {
+                return tick;
+              }
+              return '';
+            }"
               />
             </div>
           </AccordionContent>
@@ -237,7 +281,7 @@ const mergeVotes = (existingVotes: MapVote[], newVotes: any[]): boolean => {
       existingVotes.push(map);
     }
 
-    voters.forEach((voter) => {
+    voters.forEach((voter: string) => {
       if (!map.voters.has(voter)) {
         map.voters.add(voter);
         map.votes += 1;
