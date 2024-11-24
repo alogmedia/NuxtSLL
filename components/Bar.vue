@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { BarChart } from "@/components/ui/chart-bar";
-import { PropType } from "vue";
 
 const props = defineProps({
   chartData: {

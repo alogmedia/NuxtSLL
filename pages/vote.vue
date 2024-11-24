@@ -102,7 +102,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Skeleton } from "@/components/ui/skeleton";
 
 // pages/vote.vue
 definePageMeta({
