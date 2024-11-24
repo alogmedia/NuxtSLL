@@ -10,7 +10,27 @@
         </li>
       </ul>
     </div>
-    <BarChart :chartData="chartData" :chartOptions="chartOptions" />
+
+    <div v-if="totalVotes.length">
+      <BarChart :chartData="totalChartData" :chartOptions="chartOptions" />
+    </div>
+    <div v-else>
+      <p>Loading chart data...</p>
+    </div>
+    <div class="daily-votes">
+      <h3>Daily Votes</h3>
+      <BarChart :chartData="dailyChartData" :chartOptions="chartOptions" />
+    </div>
+
+    <div class="weekly-votes">
+      <h3>Weekly Votes</h3>
+      <BarChart :chartData="weeklyChartData" :chartOptions="chartOptions" />
+    </div>
+
+    <div class="monthly-votes">
+      <h3>Monthly Votes</h3>
+      <BarChart :chartData="monthlyChartData" :chartOptions="chartOptions" />
+    </div>
   </div>
 </template>
 
@@ -49,26 +69,12 @@ interface TotalVote {
 const mapVotes = ref<MapVote[]>([]);
 const lastUpdateTime = ref<string>("");
 const currentMapId = ref<string>("");
-const totalVotes = ref<TotalVote[]>([]);
+const totalVotes = ref<TotalVote[]>([]); // Initialized as an empty array
 const dailyVotes = ref<TotalVote[]>([]);
 const weeklyVotes = ref<TotalVote[]>([]);
 const monthlyVotes = ref<TotalVote[]>([]);
 
-// Computed properties to sort daily, weekly, and monthly votes
-const sortedDailyVotes = computed(() => {
-  return [...dailyVotes.value].sort((a, b) => b.totalVotes - a.totalVotes);
-});
-
-const sortedWeeklyVotes = computed(() => {
-  return [...weeklyVotes.value].sort((a, b) => b.totalVotes - a.totalVotes);
-});
-
-const sortedMonthlyVotes = computed(() => {
-  return [...monthlyVotes.value].sort((a, b) => b.totalVotes - a.totalVotes);
-});
-
-// Function to determine vote color based on rank
-const getVoteColor = (index: number, length: number) => {
+const getVoteColor = (index: number) => {
   if (index === 0) return "green";
   if (index === 1) return "yellow";
   return "red";
@@ -79,125 +85,179 @@ const chartOptions = ref({
   maintainAspectRatio: false,
 });
 
-const chartData = computed(() => ({
-  labels: totalVotes.value.map((vote) => vote.map), // X-axis labels from map names
+const totalChartData = computed(() => ({
+  labels: totalVotes.value.length
+    ? totalVotes.value.map((vote) => vote.map)
+    : ["No Data"], // Default label
   datasets: [
     {
       label: "Total Votes",
-      backgroundColor: totalVotes.value.map((_, index) =>
-        getVoteColor(index, totalVotes.value.length),
-      ), // Dynamic colors for bars
-      data: totalVotes.value.map((vote) => vote.totalVotes), // Y-axis data
+      backgroundColor: totalVotes.value.length
+        ? totalVotes.value.map((_, index) => getVoteColor(index))
+        : ["#d3d3d3"], // Default color
+      data: totalVotes.value.length
+        ? totalVotes.value.map((vote) => vote.totalVotes)
+        : [0], // Default data
     },
   ],
 }));
 
-const loadVotesFromFile = async () => {
-  try {
-    const response = await fetch("/api/loadVotes", {
-      method: "GET",
-    });
+const dailyChartData = computed(() => ({
+  labels: dailyVotes.value.length
+    ? dailyVotes.value.map((vote) => vote.map)
+    : ["No Data"],
+  datasets: [
+    {
+      label: "Daily Votes",
+      backgroundColor: dailyVotes.value.length
+        ? dailyVotes.value.map((_, index) => getVoteColor(index))
+        : ["#d3d3d3"],
+      data: dailyVotes.value.length
+        ? dailyVotes.value.map((vote) => vote.totalVotes)
+        : [0],
+    },
+  ],
+}));
 
-    if (!response.ok) {
-      throw new Error(
-        `Failed to load votes from file: ${response.status} ${response.statusText}`,
-      );
-    }
+const weeklyChartData = computed(() => ({
+  labels: weeklyVotes.value.length
+    ? weeklyVotes.value.map((vote) => vote.map)
+    : ["No Data"],
+  datasets: [
+    {
+      label: "Weekly Votes",
+      backgroundColor: weeklyVotes.value.length
+        ? weeklyVotes.value.map((_, index) => getVoteColor(index))
+        : ["#d3d3d3"],
+      data: weeklyVotes.value.length
+        ? weeklyVotes.value.map((vote) => vote.totalVotes)
+        : [0],
+    },
+  ],
+}));
 
-    const data = await response.json();
-    console.log("Loaded data from file:", data);
+const monthlyChartData = computed(() => ({
+  labels: monthlyVotes.value.length
+    ? monthlyVotes.value.map((vote) => vote.map)
+    : ["No Data"],
+  datasets: [
+    {
+      label: "Monthly Votes",
+      backgroundColor: monthlyVotes.value.length
+        ? monthlyVotes.value.map((_, index) => getVoteColor(index))
+        : ["#d3d3d3"],
+      data: monthlyVotes.value.length
+        ? monthlyVotes.value.map((vote) => vote.totalVotes)
+        : [0],
+    },
+  ],
+}));
 
-    // Ensure data.history is an array and has valid entries
-    if (
-      data.history &&
-      Array.isArray(data.history) &&
-      data.history.length > 0
-    ) {
-      const latestHistory = data.history[data.history.length - 1];
-
-      // Validate that mapVotes exists and is an array
-      if (latestHistory && Array.isArray(latestHistory.mapVotes)) {
-        mapVotes.value = latestHistory.mapVotes.map((map: any) => ({
-          ...map,
-          voters: new Set(map.voters || []), // Ensure voters is always a Set
-        }));
-        lastUpdateTime.value = latestHistory.timeofvote || "";
-        currentMapId.value = latestHistory.mapId || "";
-      } else {
-        console.warn("Unexpected format in latestHistory or missing mapVotes");
-        mapVotes.value = [];
-      }
-    } else {
-      console.warn(
-        "Unexpected format in local file data - history is missing or empty",
-      );
-      mapVotes.value = [];
-    }
-
-    // Ensure data.totalVotes is an array
-    if (data.totalVotes && Array.isArray(data.totalVotes)) {
-      totalVotes.value = data.totalVotes;
-    } else {
-      console.warn(
-        "Unexpected format in local file data - totalVotes is missing or not an array",
-      );
-      totalVotes.value = [];
-    }
-
-    // Calculate daily, weekly, and monthly votes if the history is valid
-    if (data.history && Array.isArray(data.history)) {
-      const now = new Date();
-      const dayInMs = 24 * 60 * 60 * 1000;
-      const weekInMs = 7 * dayInMs;
-      const monthInMs = 30 * dayInMs;
-
-      dailyVotes.value = calculateVotesWithinTimeframe(
-        data.history,
-        now,
-        dayInMs,
-      );
-      weeklyVotes.value = calculateVotesWithinTimeframe(
-        data.history,
-        now,
-        weekInMs,
-      );
-      monthlyVotes.value = calculateVotesWithinTimeframe(
-        data.history,
-        now,
-        monthInMs,
-      );
-    }
-  } catch (error) {
-    console.error("Error loading data from file:", error);
-  }
-};
-
+// Calculate votes within a timeframe
 const calculateVotesWithinTimeframe = (
   history: HistoryEntry[],
   now: Date,
   timeframeMs: number,
 ): TotalVote[] => {
-  const votesMap = new Map<string, Set<string>>();
+  const votesMap = new Map<string, number>();
 
   history.forEach((entry) => {
     const entryTime = new Date(entry.timeofvote).getTime();
 
+    // Add validation for invalid or missing dates
+    if (isNaN(entryTime)) {
+      console.warn(`Invalid timeofvote detected: ${entry.timeofvote}`);
+      return; // Skip this entry
+    }
+
+    // Ensure mapVotes exists and is an array
+    if (!entry.mapVotes || !Array.isArray(entry.mapVotes)) {
+      console.warn(`Invalid or missing mapVotes in entry:`, entry);
+      return; // Skip this entry
+    }
+
     if (now.getTime() - entryTime <= timeframeMs) {
       entry.mapVotes.forEach((mapVote) => {
-        if (!votesMap.has(mapVote.prettyName)) {
-          votesMap.set(mapVote.prettyName, new Set());
-        }
-        mapVote.voters?.forEach((voter) =>
-          votesMap.get(mapVote.prettyName)?.add(voter),
+        votesMap.set(
+          mapVote.prettyName,
+          (votesMap.get(mapVote.prettyName) || 0) + mapVote.votes,
         );
       });
     }
   });
 
-  return Array.from(votesMap.entries()).map(([map, voters]) => ({
+  return Array.from(votesMap.entries()).map(([map, totalVotes]) => ({
     map,
-    totalVotes: voters.size,
+    totalVotes,
   }));
+};
+
+const mergeVotes = (existingVotes: MapVote[], newVotes: any[]): boolean => {
+  let isChanged = false;
+
+  newVotes.forEach((entry) => {
+    const { pretty_name, game_mode, voters = [] } = entry.map;
+    let map = existingVotes.find(
+      (m) => m.prettyName === pretty_name && m.gameMode === game_mode,
+    );
+
+    if (!map) {
+      map = {
+        prettyName: pretty_name,
+        gameMode: game_mode,
+        votes: 0,
+        voters: new Set<string>(),
+      };
+      existingVotes.push(map);
+    }
+
+    voters.forEach((voter) => {
+      if (!map.voters.has(voter)) {
+        map.voters.add(voter);
+        map.votes += 1;
+        isChanged = true;
+      }
+    });
+  });
+
+  return isChanged;
+};
+
+const updateVotesByTimeframe = (history: HistoryEntry[], now: Date) => {
+  const timeframes = [
+    { ref: dailyVotes, ms: 24 * 60 * 60 * 1000 }, // 1 day
+    { ref: weeklyVotes, ms: 7 * 24 * 60 * 60 * 1000 }, // 1 week
+    { ref: monthlyVotes, ms: 30 * 24 * 60 * 60 * 1000 }, // 1 month
+  ];
+
+  timeframes.forEach(({ ref, ms }) => {
+    ref.value = calculateVotesWithinTimeframe(history, now, ms);
+  });
+};
+
+const loadVotesFromFile = async () => {
+  try {
+    const response = await fetch("/api/loadVotes", { method: "GET" });
+    if (!response.ok) throw new Error("Failed to load votes");
+
+    const data = await response.json();
+
+    if (!data.history || !Array.isArray(data.history)) {
+      console.warn("Invalid or missing history data");
+      return;
+    }
+    if (!data.totalVotes || !Array.isArray(data.totalVotes)) {
+      console.warn("Invalid or missing totalVotes data");
+      totalVotes.value = [];
+      return;
+    }
+
+    console.log("Loaded totalVotes:", data.totalVotes); // Debug
+    totalVotes.value = data.totalVotes || [];
+    updateVotesByTimeframe(data.history, new Date());
+  } catch (error) {
+    console.error("Error loading votes:", error);
+  }
 };
 
 const saveVotesToFile = async (isNewMap = false) => {
@@ -309,7 +369,6 @@ const fetchGameState = async () => {
   }
 };
 
-// Fetch new votes from the API (proxy endpoint)
 const fetchVotesFromAPI = async () => {
   try {
     const response = await fetch("/api/proxy", {
@@ -317,9 +376,7 @@ const fetchVotesFromAPI = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        endpoint: "/api/get_votemap_status",
-      }),
+      body: JSON.stringify({ endpoint: "/api/get_votemap_status" }),
     });
 
     if (!response.ok) {
@@ -329,97 +386,25 @@ const fetchVotesFromAPI = async () => {
     }
 
     const data = await response.json();
-    console.log("Fetched data from API:", data);
+    if (!data.result || !Array.isArray(data.result)) {
+      console.warn("Unexpected API response:", data);
+      return;
+    }
 
-    if (data.result && Array.isArray(data.result)) {
-      let isDataChanged = false;
-
-      // Merge new votes with existing votes
-      data.result.forEach((entry: any) => {
-        const mapId = entry.map.id;
-        const prettyName = entry.map.pretty_name;
-        const gameMode = entry.map.game_mode;
-        const voters = entry.voters || [];
-
-        // Find the corresponding map in the current votes
-        let map = mapVotes.value.find(
-          (m) => m.prettyName === prettyName && m.gameMode === gameMode,
-        );
-
-        if (!map) {
-          // If the map is not found, add it to the votes
-          map = {
-            prettyName,
-            gameMode,
-            votes: 0,
-            voters: new Set<string>(),
-          };
-          mapVotes.value.push(map);
-        }
-
-        // Add new voters to the existing map
-        voters.forEach((voter: string) => {
-          if (!map!.voters.has(voter)) {
-            map!.voters.add(voter);
-            map!.votes += 1;
-            isDataChanged = true;
-
-            // Update total votes
-            let totalVote = totalVotes.value.find((t) => t.map === prettyName);
-            if (totalVote) {
-              totalVote.totalVotes += 1;
-            } else {
-              totalVotes.value.push({ map: prettyName, totalVotes: 1 });
-            }
-          }
-        });
-      });
-
-      if (isDataChanged) {
-        console.log("New votes data detected. Updating...");
-        saveVotesToFile(); // Save updated votes
-
-        // Update daily, weekly, and monthly votes immediately after fetching new votes
-        const now = new Date();
-        const dayInMs = 24 * 60 * 60 * 1000;
-        const weekInMs = 7 * dayInMs;
-        const monthInMs = 30 * dayInMs;
-
-        dailyVotes.value = calculateVotesWithinTimeframe(
-          data.history,
-          now,
-          dayInMs,
-        );
-        weeklyVotes.value = calculateVotesWithinTimeframe(
-          data.history,
-          now,
-          weekInMs,
-        );
-        monthlyVotes.value = calculateVotesWithinTimeframe(
-          data.history,
-          now,
-          monthInMs,
-        );
-      } else {
-        console.log("No new changes in vote data.");
-      }
-    } else {
-      console.warn("Unexpected format in API response data");
+    const isDataChanged = mergeVotes(mapVotes.value, data.result);
+    if (isDataChanged) {
+      saveVotesToFile();
+      updateVotesByTimeframe(data.history, new Date());
     }
   } catch (error) {
     console.error("Error fetching data from API:", error);
   }
 };
 
-onMounted(() => {
-  loadVotesFromFile().then(() => {
-    fetchGameState().then(() => {
-      fetchVotesFromAPI(); // Initial load
-      setInterval(() => {
-        fetchVotesFromAPI(); // Refresh votes every 5 minutes
-      }, 60000);
-    });
-  });
+onMounted(async () => {
+  await loadVotesFromFile();
+  await Promise.all([fetchGameState(), fetchVotesFromAPI()]);
+  setInterval(fetchVotesFromAPI, 60000); // Refresh every minute
 });
 </script>
 
