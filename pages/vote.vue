@@ -25,7 +25,7 @@
           </div>
         </div>
         <div class="total-votes" v-if="totalVotes.length">
-          <Bar
+          <LazyBar
             :chartData="totalChartData"
             :index="'name'"
             :categories="['total']"
@@ -71,7 +71,7 @@
           <AccordionContent>
             <div class="daily-votes">
               <h3>Daily Votes</h3>
-              <Bar
+              <LazyBar
                 :chartData="dailyChartData"
                 :index="'name'"
                 :categories="['total']"
@@ -92,7 +92,7 @@
 
             <div class="weekly-votes">
               <h3>Weekly Votes</h3>
-              <Bar
+              <LazyBar
                 :chartData="weeklyChartData"
                 :index="'name'"
                 :categories="['total']"
@@ -113,7 +113,7 @@
 
             <div class="monthly-votes">
               <h3>Monthly Votes</h3>
-              <Bar
+              <LazyBar
                 :chartData="monthlyChartData"
                 :index="'name'"
                 :categories="['total']"
