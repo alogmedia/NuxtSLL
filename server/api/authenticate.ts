@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event); // Get the request body
-  const isMatch = await bcrypt.compare(body.password, storedHash);
+  const isMatch = bcrypt.compareSync(body.password, storedHash);
 
   if (isMatch) {
     setCookie(event, "votePageAuth", "authenticated", {
