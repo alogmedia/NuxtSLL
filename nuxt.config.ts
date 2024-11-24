@@ -3,20 +3,31 @@ import { defineNuxtConfig } from "nuxt/config";
 // Nuxt 3 Configuration
 export default defineNuxtConfig({
   // Alias Configuration
-  ssr: true,
-
-  runtimeConfig: {
-    VOTE_PAGE_HASH: process.env.VOTE_PAGE_HASH || "", // Ensure it has a fallback
-  },
+  ssr: false, // Disable server-side rendering for static hosting
+  target: "static", // Ensure static files are generated for Cloudflare Pages
 
   // Tailwind CSS Module Configuration (Nuxt has built-in Tailwind support)
-  modules: ["@nuxtjs/tailwindcss"],
+  modules: ["@nuxtjs/tailwindcss", "@kgierke/nuxt-basic-auth"],
+
+  basicAuth: {
+    enabled: true,
+    users: [
+      {
+        username: "notfound404",
+        password: "Elpatr0n!",
+      },
+    ],
+    allowedRoutes: ["/", "/artillery", "/privacypolicy", "/blog/.*", "/api/.*"],
+  },
 
   build: {
-    rollupOptions: {
-      external: ["@vueuse/core"],
+    loaders: {
+      scss: {
+        implementation: require("sass"),
+      },
     },
   },
+
   tailwindcss: {
     cssPath: "@/assets/css/index.css",
   },
@@ -29,10 +40,6 @@ export default defineNuxtConfig({
       },
     ],
   },
-
-  css: [
-    "@/assets/css/index.css", // Assuming Tailwind is imported here
-  ],
 
   // PostCSS Configuration
   postcss: {

@@ -6,10 +6,13 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "preview": "pnpm run build && wrangler pages dev",
+    "postinstall": "nuxt prepare",
+    "deploy": "pnpm run build && wrangler pages deploy",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
+    "@kgierke/nuxt-basic-auth": "^1.7.0",
     "@nuxtjs/tailwindcss": "^6.12.2",
     "@tailwindcss/typography": "^0.5.15",
     "@vueuse/core": "^11.2.0",
@@ -30,10 +33,11 @@
     "vue-router": "latest"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241022.0",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
-    "sass": "^1.81.0",
-    "sass-embedded": "^1.81.0",
+    "sass": "^1.80.4",
+    "scss": "^0.2.4",
     "tailwindcss": "^3.4.15"
   }
 }
