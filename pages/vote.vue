@@ -1,41 +1,79 @@
 <template>
   <div class="vote-tracker">
     <h2>Map Voting Statistics</h2>
-    <div class="total-votes">
-      <h3>Total Votes of All Time</h3>
-      <ul>
-        <li v-for="(total, index) in totalVotes" :key="index">
-          {{ total.map }}:
-          <span class="votes">{{ total.totalVotes }} vote(s)</span>
-        </li>
-      </ul>
-    </div>
+    <div class="all-votes">
+      <Accordion type="single" collapsible>
+        <AccordionItem value="item-1">
+          <AccordionTrigger>See total Votes</AccordionTrigger>
+          <AccordionContent>
+            <div class="first-votes">
+              <ul>
+                <li v-for="(total, index) in totalVotes" :key="index">
+                  {{ total.map }}:
+                  <span class="votes">{{ total.totalVotes }} vote(s)</span>
+                </li>
+              </ul>
+              <div class="total-votes" v-if="totalVotes.length">
+                <Bar
+                  :chartData="totalChartData"
+                  :index="'name'"
+                  :categories="['total']"
+                  :yFormatter="(tick) => `${tick} votes`"
+                />
+              </div>
+              <div v-else>
+                <p>Loading chart data...</p>
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>See Charts Daily/Weekly/Monthly</AccordionTrigger>
+          <AccordionContent>
+            <div class="daily-votes">
+              <h3>Daily Votes</h3>
+              <Bar
+                :chartData="dailyChartData"
+                :index="'name'"
+                :categories="['total']"
+                :yFormatter="(tick) => `${tick} votes`"
+              />
+            </div>
 
-    <div v-if="totalVotes.length">
-      <BarChart :chartData="totalChartData" :chartOptions="chartOptions" />
-    </div>
-    <div v-else>
-      <p>Loading chart data...</p>
-    </div>
-    <div class="daily-votes">
-      <h3>Daily Votes</h3>
-      <BarChart :chartData="dailyChartData" :chartOptions="chartOptions" />
-    </div>
+            <div class="weekly-votes">
+              <h3>Weekly Votes</h3>
+              <Bar
+                :chartData="weeklyChartData"
+                :index="'name'"
+                :categories="['total']"
+                :yFormatter="(tick) => `${tick} votes`"
+              />
+            </div>
 
-    <div class="weekly-votes">
-      <h3>Weekly Votes</h3>
-      <BarChart :chartData="weeklyChartData" :chartOptions="chartOptions" />
-    </div>
-
-    <div class="monthly-votes">
-      <h3>Monthly Votes</h3>
-      <BarChart :chartData="monthlyChartData" :chartOptions="chartOptions" />
+            <div class="monthly-votes">
+              <h3>Monthly Votes</h3>
+              <Bar
+                :chartData="monthlyChartData"
+                :index="'name'"
+                :categories="['total']"
+                :yFormatter="(tick) => `${tick} votes`"
+              />
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 // pages/vote.vue
 definePageMeta({
@@ -85,73 +123,33 @@ const chartOptions = ref({
   maintainAspectRatio: false,
 });
 
-const totalChartData = computed(() => ({
-  labels: totalVotes.value.length
-    ? totalVotes.value.map((vote) => vote.map)
-    : ["No Data"], // Default label
-  datasets: [
-    {
-      label: "Total Votes",
-      backgroundColor: totalVotes.value.length
-        ? totalVotes.value.map((_, index) => getVoteColor(index))
-        : ["#d3d3d3"], // Default color
-      data: totalVotes.value.length
-        ? totalVotes.value.map((vote) => vote.totalVotes)
-        : [0], // Default data
-    },
-  ],
-}));
+const totalChartData = computed(() =>
+  totalVotes.value.map((vote, index) => ({
+    name: vote.map, // X-axis value
+    total: vote.totalVotes, // Bar height
+  })),
+);
 
-const dailyChartData = computed(() => ({
-  labels: dailyVotes.value.length
-    ? dailyVotes.value.map((vote) => vote.map)
-    : ["No Data"],
-  datasets: [
-    {
-      label: "Daily Votes",
-      backgroundColor: dailyVotes.value.length
-        ? dailyVotes.value.map((_, index) => getVoteColor(index))
-        : ["#d3d3d3"],
-      data: dailyVotes.value.length
-        ? dailyVotes.value.map((vote) => vote.totalVotes)
-        : [0],
-    },
-  ],
-}));
+const dailyChartData = computed(() =>
+  dailyVotes.value.map((vote) => ({
+    name: vote.map,
+    total: vote.totalVotes,
+  })),
+);
 
-const weeklyChartData = computed(() => ({
-  labels: weeklyVotes.value.length
-    ? weeklyVotes.value.map((vote) => vote.map)
-    : ["No Data"],
-  datasets: [
-    {
-      label: "Weekly Votes",
-      backgroundColor: weeklyVotes.value.length
-        ? weeklyVotes.value.map((_, index) => getVoteColor(index))
-        : ["#d3d3d3"],
-      data: weeklyVotes.value.length
-        ? weeklyVotes.value.map((vote) => vote.totalVotes)
-        : [0],
-    },
-  ],
-}));
+const weeklyChartData = computed(() =>
+  weeklyVotes.value.map((vote) => ({
+    name: vote.map,
+    total: vote.totalVotes,
+  })),
+);
 
-const monthlyChartData = computed(() => ({
-  labels: monthlyVotes.value.length
-    ? monthlyVotes.value.map((vote) => vote.map)
-    : ["No Data"],
-  datasets: [
-    {
-      label: "Monthly Votes",
-      backgroundColor: monthlyVotes.value.length
-        ? monthlyVotes.value.map((_, index) => getVoteColor(index))
-        : ["#d3d3d3"],
-      data: monthlyVotes.value.length
-        ? monthlyVotes.value.map((vote) => vote.totalVotes)
-        : [0],
-    },
-  ],
-}));
+const monthlyChartData = computed(() =>
+  monthlyVotes.value.map((vote) => ({
+    name: vote.map,
+    total: vote.totalVotes,
+  })),
+);
 
 // Calculate votes within a timeframe
 const calculateVotesWithinTimeframe = (
@@ -413,7 +411,7 @@ onMounted(async () => {
   padding: 2rem;
   background-color: #1e1e2e;
   border-radius: 1rem;
-  max-width: 1200px;
+  max-width: 95%;
   margin: 2rem auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   color: #fff;
@@ -448,15 +446,15 @@ onMounted(async () => {
 
       .votes {
         font-weight: bold;
-        color: #50fa7b;
+        color: #ffd700;
       }
     }
   }
 }
 
-.date-votes {
+.first-votes {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
   margin-top: 3rem;
 
