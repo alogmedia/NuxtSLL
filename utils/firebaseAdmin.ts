@@ -1,21 +1,19 @@
-import { initializeApp, credential, database } from "firebase-admin";
-import { createRequire } from "module"; // Required to resolve runtimeConfig in server
+import admin from "firebase-admin";
 
-const require = createRequire(import.meta.url);
-const { projectId, privateKey, clientEmail } =
-  require("#nuxt/config").runtimeConfig.firebase;
+const serviceAccount = {
+  type: "service_account",
+  project_id: process.env.FIREBASE_PROJECT_ID,
+  private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+  client_email: process.env.FIREBASE_CLIENT_EMAIL,
+};
 
-// Initialize Firebase Admin SDK
-const firebaseAdmin = initializeApp({
-  credential: credential.cert({
-    projectId,
-    privateKey,
-    clientEmail,
-  }),
-  databaseURL:
-    "https://sllvoting-default-rtdb.europe-west1.firebasedatabase.app/",
-});
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL:
+      "https://sllvoting-default-rtdb.europe-west1.firebasedatabase.app/",
+  });
+}
 
-const db = database();
-
-export { firebaseAdmin, db };
+export const db = admin.database();
+export default admin;

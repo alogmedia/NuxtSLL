@@ -7,17 +7,10 @@ export default defineEventHandler(async () => {
     const snapshot = await ref.once("value");
     if (snapshot.exists()) {
       return snapshot.val();
-    } else {
-      return {
-        timeofvote: {},
-        mapVotes: [],
-      };
     }
+    return { timeofvote: {}, mapVotes: [] };
   } catch (error) {
-    console.error("Error loading data from Firebase:", error);
-    return {
-      timeofvote: {},
-      mapVotes: [],
-    };
+    console.error("Error loading votes:", error);
+    throw createError({ statusCode: 500, message: "Failed to load votes" });
   }
 });
