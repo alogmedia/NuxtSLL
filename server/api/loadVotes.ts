@@ -1,18 +1,23 @@
-import { promises as fs } from "fs";
-import { join } from "path";
+import { db } from "@/utils/firebaseAdmin";
 
 export default defineEventHandler(async () => {
-  const filePath = join(process.cwd(), "data", "mapVotes.json");
+  const ref = db.ref("mapVotes");
 
   try {
-    const data = await fs.readFile(filePath, "utf-8");
-    console.log("Loaded data from file:", data);
-    return JSON.parse(data); // Return the data as JSON
+    const snapshot = await ref.once("value");
+    if (snapshot.exists()) {
+      return snapshot.val();
+    } else {
+      return {
+        timeofvote: {},
+        mapVotes: [],
+      };
+    }
   } catch (error) {
-    console.error("Error loading data from file:", error);
+    console.error("Error loading data from Firebase:", error);
     return {
       timeofvote: {},
-      mapVotes: [], // Default structure if file is not found or empty
+      mapVotes: [],
     };
   }
 });

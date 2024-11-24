@@ -16,6 +16,8 @@
     "add": "^2.0.6",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.0",
+    "firebase": "^11.0.2",
+    "firebase-admin": "^13.0.1",
     "install": "^0.13.0",
     "lucide-vue-next": "^0.460.0",
     "module": "^1.2.5",
