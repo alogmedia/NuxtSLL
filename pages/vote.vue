@@ -54,42 +54,6 @@
           </div>
         </div>
       </div>
-      <Accordion type="single" collapsible>
-        <AccordionItem value="item-1">
-          <AccordionTrigger>See Charts Daily/Weekly/Monthly</AccordionTrigger>
-          <AccordionContent>
-            <div class="daily-votes">
-              <h3>Daily Votes</h3>
-              <Bar
-                :chartData="dailyChartData"
-                :index="'name'"
-                :categories="['total']"
-                :yFormatter="(tick) => `${tick} votes`"
-              />
-            </div>
-
-            <div class="weekly-votes">
-              <h3>Weekly Votes</h3>
-              <Bar
-                :chartData="weeklyChartData"
-                :index="'name'"
-                :categories="['total']"
-                :yFormatter="(tick) => `${tick} votes`"
-              />
-            </div>
-
-            <div class="monthly-votes">
-              <h3>Monthly Votes</h3>
-              <Bar
-                :chartData="monthlyChartData"
-                :index="'name'"
-                :categories="['total']"
-                :yFormatter="(tick) => `${tick} votes`"
-              />
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
     </div>
   </div>
 </template>
@@ -108,23 +72,12 @@ definePageMeta({
   middleware: "auth-password",
 });
 
-// State for map votes, historical data, and total votes
+// State for map votes and total votes
 interface MapVote {
   prettyName: string;
   gameMode: string;
   votes: number;
   voters: Set<string>;
-}
-
-interface HistoryEntry {
-  mapId: string;
-  timeofvote: string;
-  mapVotes: {
-    prettyName: string;
-    gameMode: string;
-    votes: number;
-    voters: string[];
-  }[];
 }
 
 interface TotalVote {
@@ -133,12 +86,16 @@ interface TotalVote {
 }
 
 const mapVotes = ref<MapVote[]>([]);
-const lastUpdateTime = ref<string>("");
+const totalVotes = ref<TotalVote[]>([]);
 const currentMapId = ref<string>("");
-const totalVotes = ref<TotalVote[]>([]); // Initialized as an empty array
-const dailyVotes = ref<TotalVote[]>([]);
-const weeklyVotes = ref<TotalVote[]>([]);
-const monthlyVotes = ref<TotalVote[]>([]);
+
+// Chart data for visualization
+const totalChartData = computed(() =>
+  totalVotes.value.map((vote) => ({
+    name: vote.map, // X-axis value
+    total: vote.totalVotes, // Bar height
+  })),
+);
 
 const getVoteColor = (index: number) => {
   if (index === 0) return "green";
@@ -146,227 +103,63 @@ const getVoteColor = (index: number) => {
   return "red";
 };
 
-const chartOptions = ref({
-  responsive: true,
-  maintainAspectRatio: false,
-});
-
-const totalChartData = computed(() =>
-  totalVotes.value.map((vote, index) => ({
-    name: vote.map, // X-axis value
-    total: vote.totalVotes, // Bar height
-  })),
-);
-
-const dailyChartData = computed(() =>
-  dailyVotes.value.map((vote) => ({
-    name: vote.map,
-    total: vote.totalVotes,
-  })),
-);
-
-const weeklyChartData = computed(() =>
-  weeklyVotes.value.map((vote) => ({
-    name: vote.map,
-    total: vote.totalVotes,
-  })),
-);
-
-const monthlyChartData = computed(() =>
-  monthlyVotes.value.map((vote) => ({
-    name: vote.map,
-    total: vote.totalVotes,
-  })),
-);
-
-// Calculate votes within a timeframe
-const calculateVotesWithinTimeframe = (
-  history: HistoryEntry[],
-  now: Date,
-  timeframeMs: number,
-): TotalVote[] => {
-  const votesMap = new Map<string, number>();
-
-  history.forEach((entry) => {
-    const entryTime = new Date(entry.timeofvote).getTime();
-
-    // Add validation for invalid or missing dates
-    if (isNaN(entryTime)) {
-      console.warn(`Invalid timeofvote detected: ${entry.timeofvote}`);
-      return; // Skip this entry
-    }
-
-    // Ensure mapVotes exists and is an array
-    if (!entry.mapVotes || !Array.isArray(entry.mapVotes)) {
-      console.warn(`Invalid or missing mapVotes in entry:`, entry);
-      return; // Skip this entry
-    }
-
-    if (now.getTime() - entryTime <= timeframeMs) {
-      entry.mapVotes.forEach((mapVote) => {
-        votesMap.set(
-          mapVote.prettyName,
-          (votesMap.get(mapVote.prettyName) || 0) + mapVote.votes,
-        );
-      });
-    }
-  });
-
-  return Array.from(votesMap.entries()).map(([map, totalVotes]) => ({
-    map,
-    totalVotes,
-  }));
-};
-
-const mergeVotes = (existingVotes: MapVote[], newVotes: any[]): boolean => {
-  let isChanged = false;
-
-  newVotes.forEach((entry) => {
-    const { pretty_name, game_mode, voters = [] } = entry.map;
-    let map = existingVotes.find(
-      (m) => m.prettyName === pretty_name && m.gameMode === game_mode,
-    );
-
-    if (!map) {
-      map = {
-        prettyName: pretty_name,
-        gameMode: game_mode,
-        votes: 0,
-        voters: new Set<string>(),
-      };
-      existingVotes.push(map);
-    }
-
-    voters.forEach((voter) => {
-      if (!map.voters.has(voter)) {
-        map.voters.add(voter);
-        map.votes += 1;
-        isChanged = true;
-      }
-    });
-  });
-
-  return isChanged;
-};
-
-const updateVotesByTimeframe = (history: HistoryEntry[], now: Date) => {
-  const timeframes = [
-    { ref: dailyVotes, ms: 24 * 60 * 60 * 1000 }, // 1 day
-    { ref: weeklyVotes, ms: 7 * 24 * 60 * 60 * 1000 }, // 1 week
-    { ref: monthlyVotes, ms: 30 * 24 * 60 * 60 * 1000 }, // 1 month
-  ];
-
-  timeframes.forEach(({ ref, ms }) => {
-    ref.value = calculateVotesWithinTimeframe(history, now, ms);
-  });
-};
-
+// Load votes from local file
 const loadVotesFromFile = async () => {
   try {
     const response = await fetch("/api/loadVotes", { method: "GET" });
-    if (!response.ok) throw new Error("Failed to load votes");
+    if (!response.ok) {
+      throw new Error(
+        `Failed to load votes: ${response.status} ${response.statusText}`,
+      );
+    }
 
     const data = await response.json();
+    console.log("Loaded data from file:", data);
 
-    if (!data.history || !Array.isArray(data.history)) {
-      console.warn("Invalid or missing history data");
-      return;
-    }
-    if (!data.totalVotes || !Array.isArray(data.totalVotes)) {
-      console.warn("Invalid or missing totalVotes data");
+    // Validate totalVotes
+    if (data.totalVotes && Array.isArray(data.totalVotes)) {
+      totalVotes.value = data.totalVotes;
+    } else {
+      console.warn("Invalid format for totalVotes in local data.");
       totalVotes.value = [];
-      return;
     }
-
-    console.log("Loaded totalVotes:", data.totalVotes); // Debug
-    totalVotes.value = data.totalVotes || [];
-    updateVotesByTimeframe(data.history, new Date());
   } catch (error) {
-    console.error("Error loading votes:", error);
+    console.error("Error loading votes from file:", error);
   }
 };
 
-const saveVotesToFile = async (isNewMap = false) => {
+// Save votes to local file
+const saveVotesToFile = async () => {
   try {
     console.log("Saving votes to file:", mapVotes.value);
 
-    // Convert `voters` Set back to array for JSON serialization
-    const dataToSave: {
-      history: HistoryEntry[];
-      totalVotes: TotalVote[];
-    } = {
-      history: [],
+    const dataToSave = {
       totalVotes: totalVotes.value,
     };
 
-    if (isNewMap) {
-      // Add new section if it's a new map
-      dataToSave.history.push({
-        mapId: currentMapId.value,
-        timeofvote: new Date().toISOString(),
-        mapVotes: mapVotes.value.map((map) => ({
-          prettyName: map.prettyName,
-          gameMode: map.gameMode,
-          votes: map.votes,
-          voters: Array.from(map.voters),
-        })),
-      });
-    } else {
-      // Fetch previous data from the file first to correctly append to `history`
-      const response = await fetch("/api/loadVotes", { method: "GET" });
-      if (!response.ok) {
-        throw new Error(
-          `Failed to load votes from file before saving: ${response.status} ${response.statusText}`,
-        );
-      }
-
-      const data = await response.json();
-
-      // Append existing history and update current
-      dataToSave.history = data.history || [];
-      dataToSave.history.push({
-        mapId: currentMapId.value,
-        timeofvote: new Date().toISOString(),
-        mapVotes: mapVotes.value.map((map) => ({
-          prettyName: map.prettyName,
-          gameMode: map.gameMode,
-          votes: map.votes,
-          voters: Array.from(map.voters),
-        })),
-      });
-    }
-
-    console.log("Payload to be saved:", JSON.stringify(dataToSave, null, 2));
-
     const response = await fetch("/api/saveVotes", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dataToSave),
     });
 
-    if (response.ok) {
-      console.log("Votes saved successfully to file.");
-    } else {
-      console.error("Failed to save votes:", response.statusText);
+    if (!response.ok) {
+      throw new Error(`Failed to save votes: ${response.statusText}`);
     }
+
+    console.log("Votes saved successfully.");
   } catch (error) {
     console.error("Error saving votes to file:", error);
   }
 };
 
-// Fetch the current game state to determine the current map
+// Fetch the current game state and detect map changes
 const fetchGameState = async () => {
   try {
     const response = await fetch("/api/proxy", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        endpoint: "/api/get_gamestate",
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ endpoint: "/api/get_gamestate" }),
     });
 
     if (!response.ok) {
@@ -378,59 +171,100 @@ const fetchGameState = async () => {
     const data = await response.json();
     console.log("Fetched game state:", data);
 
-    if (data.result && data.result.current_map && data.result.current_map.id) {
-      const newMapId = data.result.current_map.id;
-
-      if (newMapId !== currentMapId.value) {
-        console.log("Map has changed. Creating a new record for the new map.");
-        currentMapId.value = newMapId;
-        saveVotesToFile(true); // Save previous data and start a new section
-        mapVotes.value = []; // Reset map votes for the new map
-      }
-    } else {
-      console.warn("Unexpected format in game state response data");
+    const newMapId = data?.result?.current_map?.id;
+    if (newMapId && newMapId !== currentMapId.value) {
+      console.log("Map has changed. Resetting votes.");
+      currentMapId.value = newMapId;
+      mapVotes.value = []; // Reset votes for the new map
+      saveVotesToFile(); // Save changes
     }
   } catch (error) {
     console.error("Error fetching game state:", error);
   }
 };
 
+// Fetch votes from API and update total votes
 const fetchVotesFromAPI = async () => {
   try {
     const response = await fetch("/api/proxy", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ endpoint: "/api/get_votemap_status" }),
     });
 
     if (!response.ok) {
       throw new Error(
-        `Failed to fetch votes from API: ${response.status} ${response.statusText}`,
+        `Failed to fetch votes: ${response.status} ${response.statusText}`,
       );
     }
 
     const data = await response.json();
-    if (!data.result || !Array.isArray(data.result)) {
-      console.warn("Unexpected API response:", data);
-      return;
-    }
+    console.log("Fetched votes data from API:", data);
 
-    const isDataChanged = mergeVotes(mapVotes.value, data.result);
-    if (isDataChanged) {
-      saveVotesToFile();
-      updateVotesByTimeframe(data.history, new Date());
+    if (data.result && Array.isArray(data.result)) {
+      let isDataChanged = false;
+
+      // Merge new votes into mapVotes
+      data.result.forEach((entry: any) => {
+        const prettyName = entry.map.pretty_name;
+        const gameMode = entry.map.game_mode;
+        const voters = entry.voters || [];
+
+        // Find or create the map entry
+        let map = mapVotes.value.find(
+          (m) => m.prettyName === prettyName && m.gameMode === gameMode,
+        );
+
+        if (!map) {
+          map = { prettyName, gameMode, votes: 0, voters: new Set<string>() };
+          mapVotes.value.push(map);
+        }
+
+        // Add unique voters
+        voters.forEach((voter: string) => {
+          if (!map!.voters.has(voter)) {
+            map!.voters.add(voter);
+            map!.votes += 1;
+            isDataChanged = true;
+
+            // Update total votes
+            const totalVote = totalVotes.value.find(
+              (t) => t.map === prettyName,
+            );
+            if (totalVote) {
+              totalVote.totalVotes += 1;
+            } else {
+              totalVotes.value.push({ map: prettyName, totalVotes: 1 });
+            }
+          }
+        });
+      });
+
+      if (isDataChanged) {
+        console.log("Detected new votes. Saving data...");
+        saveVotesToFile();
+      } else {
+        console.log("No new changes in votes.");
+      }
+    } else {
+      console.warn("Invalid format in API response for votes.");
     }
   } catch (error) {
-    console.error("Error fetching data from API:", error);
+    console.error("Error fetching votes from API:", error);
   }
 };
 
-onMounted(async () => {
-  await loadVotesFromFile();
-  await Promise.all([fetchGameState(), fetchVotesFromAPI()]);
-  setInterval(fetchVotesFromAPI, 60000); // Refresh every minute
+// Initialize on mount
+onMounted(() => {
+  loadVotesFromFile().then(() => {
+    fetchGameState().then(() => {
+      fetchVotesFromAPI(); // Initial load
+      setInterval(() => {
+        loadVotesFromFile();
+        fetchVotesFromAPI(); // Refresh votes every minute
+      }, 60000);
+    });
+  });
 });
 </script>
 
