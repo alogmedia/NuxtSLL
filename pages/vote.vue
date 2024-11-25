@@ -25,7 +25,7 @@
           </div>
         </div>
         <div class="total-votes" v-if="totalVotes.length">
-          <Bar
+          <LazyBar
             :chartData="totalChartData"
             :index="'name'"
             :categories="['total']"
@@ -60,12 +60,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 // pages/vote.vue
 definePageMeta({

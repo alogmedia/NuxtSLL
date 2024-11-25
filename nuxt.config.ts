@@ -16,13 +16,6 @@ export default defineNuxtConfig({
     preset: "cloudflare-pages",
   },
 
-  build: {
-    rollupOptions: {
-      external: ["@vueuse/core"],
-      transpile: ["echarts-liquidfill"],
-    },
-  },
-
   tailwindcss: {
     cssPath: "@/assets/css/index.css",
   },
@@ -40,7 +33,6 @@ export default defineNuxtConfig({
     "@/assets/css/index.css", // Assuming Tailwind is imported here
   ],
 
-  plugins: ["@/plugins/chartjs.ts"],
   // PostCSS Configuration
   postcss: {
     plugins: {
