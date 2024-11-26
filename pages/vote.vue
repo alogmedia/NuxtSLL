@@ -66,7 +66,7 @@ definePageMeta({
   middleware: "auth-password",
 });
 
-// State for map votes and total votes
+// State for map votes, total votes, and current map
 interface MapVote {
   prettyName: string;
   gameMode: string;
@@ -79,9 +79,21 @@ interface TotalVote {
   totalVotes: number;
 }
 
-const mapVotes = ref<MapVote[]>([]);
+interface CurrentMap {
+  id: string;
+  prettyName: string;
+  gameMode: string;
+  votes: MapVote[];
+}
+
+const currentMap = ref<CurrentMap>({
+  id: "",
+  prettyName: "",
+  gameMode: "",
+  votes: [],
+});
+
 const totalVotes = ref<TotalVote[]>([]);
-const currentMapId = ref<string>("");
 
 // Chart data for visualization
 const totalChartData = computed(() =>
@@ -122,12 +134,12 @@ const loadVotesFromFile = async () => {
   }
 };
 
-// Save votes to local file
 const saveVotesToFile = async () => {
   try {
-    console.log("Saving votes to file:", mapVotes.value);
+    console.log("Saving votes to file...");
 
     const dataToSave = {
+      currentMap: currentMap.value, // Ensure the currentMap is included
       totalVotes: totalVotes.value,
     };
 
@@ -147,7 +159,6 @@ const saveVotesToFile = async () => {
   }
 };
 
-// Fetch the current game state and detect map changes
 const fetchGameState = async () => {
   try {
     const response = await fetch("/api/proxy", {
@@ -166,18 +177,42 @@ const fetchGameState = async () => {
     console.log("Fetched game state:", data);
 
     const newMapId = data?.result?.current_map?.id;
-    if (newMapId && newMapId !== currentMapId.value) {
-      console.log("Map has changed. Resetting votes.");
-      currentMapId.value = newMapId;
-      mapVotes.value = []; // Reset votes for the new map
-      saveVotesToFile(); // Save changes
+    const prettyName = data?.result?.current_map?.map?.id || "";
+    const gameMode = ""; // Populate game mode if available from API
+
+    if (newMapId && newMapId !== currentMap.value.id) {
+      console.log("Map has changed. Updating current map.");
+
+      // Save current map votes to totalVotes
+      currentMap.value.votes.forEach((mapVote) => {
+        const totalVote = totalVotes.value.find(
+          (entry) => entry.map === mapVote.prettyName,
+        );
+        if (totalVote) {
+          totalVote.totalVotes += mapVote.votes;
+        } else {
+          totalVotes.value.push({
+            map: mapVote.prettyName,
+            totalVotes: mapVote.votes,
+          });
+        }
+      });
+
+      // Update currentMap
+      currentMap.value = {
+        id: newMapId,
+        prettyName,
+        gameMode,
+        votes: [],
+      };
+
+      saveVotesToFile(); // Save updated data
     }
   } catch (error) {
     console.error("Error fetching game state:", error);
   }
 };
 
-// Fetch votes from API and update total votes
 const fetchVotesFromAPI = async () => {
   try {
     const response = await fetch("/api/proxy", {
@@ -198,45 +233,57 @@ const fetchVotesFromAPI = async () => {
     if (data.result && Array.isArray(data.result)) {
       let isDataChanged = false;
 
-      // Merge new votes into mapVotes
+      // Process each map entry in the API response
       data.result.forEach((entry: any) => {
         const prettyName = entry.map.pretty_name;
-        const gameMode = entry.map.game_mode;
         const voters = entry.voters || [];
 
-        // Find or create the map entry
-        let map = mapVotes.value.find(
-          (m) => m.prettyName === prettyName && m.gameMode === gameMode,
+        // Find or create the map entry in currentMap
+        let mapVote = currentMap.value.votes.find(
+          (vote) => vote.prettyName === prettyName,
         );
 
-        if (!map) {
-          map = { prettyName, gameMode, votes: 0, voters: new Set<string>() };
-          mapVotes.value.push(map);
+        if (!mapVote) {
+          mapVote = {
+            prettyName,
+            gameMode: entry.map.game_mode,
+            votes: 0,
+            voters: new Set<string>(),
+          };
+          currentMap.value.votes.push(mapVote);
         }
 
         // Add unique voters
+        let newVotersAdded = false;
         voters.forEach((voter: string) => {
-          if (!map!.voters.has(voter)) {
-            map!.voters.add(voter);
-            map!.votes += 1;
-            isDataChanged = true;
+          if (!mapVote!.voters.has(voter)) {
+            mapVote!.voters.add(voter);
+            mapVote!.votes += 1;
+            newVotersAdded = true;
 
-            // Update total votes
+            // Update totalVotes
             const totalVote = totalVotes.value.find(
-              (t) => t.map === prettyName,
+              (entry) => entry.map === prettyName,
             );
             if (totalVote) {
               totalVote.totalVotes += 1;
             } else {
-              totalVotes.value.push({ map: prettyName, totalVotes: 1 });
+              totalVotes.value.push({
+                map: prettyName,
+                totalVotes: 1,
+              });
             }
           }
         });
+
+        if (newVotersAdded) {
+          isDataChanged = true;
+        }
       });
 
       if (isDataChanged) {
-        console.log("Detected new votes. Saving data...");
-        saveVotesToFile();
+        console.log("New votes detected. Updating data...");
+        saveVotesToFile(); // Save updated data
       } else {
         console.log("No new changes in votes.");
       }
@@ -254,7 +301,6 @@ onMounted(() => {
     fetchGameState().then(() => {
       fetchVotesFromAPI(); // Initial load
       setInterval(() => {
-        loadVotesFromFile();
         fetchVotesFromAPI(); // Refresh votes every minute
       }, 60000);
     });
