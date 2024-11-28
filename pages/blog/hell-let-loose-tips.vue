@@ -32,16 +32,14 @@
 </style>
 
 <script setup lang="ts">
-import rules from "@/data/rules.json";
-import { useHead } from "#app";
 import HLLTipsArticle from "@/components/articles/HLLTipsArticle.vue";
 useHead({
-  title: "Scandinavians Let Loose - Articles",
+  title: "Top 10 Hell Let Loose Tips to Dominate Every Match",
   meta: [
     {
       name: "description",
       content:
-        "Articles, guides and content regarding Hell Let Loose, made by Scandinavians Let Loose players!",
+        "Master Hell Let Loose with these 10 essential tips! Enhance your teamwork, strategy, and gameplay to dominate the battlefield and lead your team to victory.",
     },
     {
       property: "og:title",
@@ -49,7 +47,7 @@ useHead({
     },
     {
       property: "og:description",
-      content: "Hell Let Loose articles, guides and content.",
+      content: "Top 10 Hell Let Loose Tips to Dominate Every Match",
     },
     {
       property: "og:image",
@@ -57,7 +55,7 @@ useHead({
     },
     {
       property: "og:url",
-      content: "https://scanhll.com/articles",
+      content: "https://scanhll.com/blog/hell-let-loose-tips",
     },
     {
       name: "twitter:card",
@@ -67,7 +65,7 @@ useHead({
   link: [
     {
       rel: "canonical",
-      href: "https://scanhll.com/articles", // Use your actual domain
+      href: "https://scanhll.com/blog/hell-let-loose-tips", // Use your actual domain
     },
   ],
 });

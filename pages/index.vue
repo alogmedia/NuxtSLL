@@ -38,9 +38,6 @@
 </style>
 
 <script setup lang="ts">
-import rules from "@/data/rules.json";
-import { useHead } from "#app";
-
 useHead({
   title: "Scandinavians Let Loose - Hell Let Loose Clan",
   meta: [
