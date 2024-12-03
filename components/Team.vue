@@ -18,12 +18,6 @@ const teamList: TeamProps[] = [
     lastName: "Killix",
     positions: ["Leader of", "Scandinavians Let Loose"],
   },
-  {
-    imageUrl: bartolleImage,
-    firstName: "Owner",
-    lastName: "bartolle",
-    positions: ["Leader of", "Scandinavians Let Loose"],
-  },
 ];
 
 onMounted(() => {
