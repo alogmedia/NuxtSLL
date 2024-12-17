@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   const headers = {
     "Content-Type": "application/json",
     Cookie:
-      "csrftoken=BKiie1ydELOEIvrmpYiPX2P6kXTohInO; __stripe_mid=8004984b-3682-467e-9c58-f75d028c04db72ea09",
+      "csrftoken=HvhK18DcULHjGLquV0eh8G7VZoWwcvRv; sessionid=hjk8436j4pgjtqkdz95xp231cnvsu1dc",
     Referer: "https://scandinavians.crcon.cc/",
   };
 
